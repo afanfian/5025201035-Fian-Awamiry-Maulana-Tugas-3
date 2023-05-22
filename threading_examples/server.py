@@ -45,17 +45,17 @@ class TimeServer(threading.Thread):
             my_socket.listen(1)  # Melihat koneksi masuk dengan backlog 1
             while True:
                 connection, client_address = my_socket.accept()  # Menerima koneksi baru
-                logging.warning(f"New connection from {client_address}")
+                logging.warning(f"Koneksi baru dari{client_address}")
 
                 client_processor = ClientProcessor(connection, client_address, self)  # Membuat instance ClientProcessor untuk setiap koneksi
                 client_processor.start()  # Memulai thread ClientProcessor
                 self.clients.append(client_processor)  # Menambahkan ClientProcessor ke daftar klien yang terhubung
                 self.client_count += 1  # Menambahkan jumlah klien yang terhubung
-                logging.warning(f"Total clients connected: {self.client_count}")
+                logging.warning(f"Total pengguna yang terhubung: {self.client_count}")
 
     def update_client_count(self):
         self.response_count += 1  # Menambahkan jumlah response yang dikirimkan
-        logging.warning(f"Total responses sent: {self.response_count}")
+        logging.warning(f"Total response pesan: {self.response_count}")
 
     def stop(self):
         # Tambahkan log di sini jika diperlukan sebelum menutup socket

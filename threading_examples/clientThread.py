@@ -1,31 +1,30 @@
 import socket
 import logging
+import threading
+import time
 
-
-
-def kirim_data():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    logging.warning("membuka socket")
-    server_address = ('localhost', 45000)
-    logging.warning(f"opening socket {server_address}")
-    sock.connect(server_address)
-
-    try:
+def send_time_request():
+    # Membuka socket dan mengirim permintaan waktu
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        server_address = ('localhost', 45000)
+        logging.warning(f"Opening socket {server_address}")
+        sock.connect(server_address)
         message = 'TIME\r\n'
-        logging.warning(f"[CLIENT] sending {message}")
+        logging.warning(f"[CLIENT] Sending {message}")
         sock.sendall(message.encode('utf-8'))
-        amount_received = 0
-        amount_expected = len(message)
-        while amount_received < amount_expected:
-            data = sock.recv(16)
-            amount_received += len(data)
-            logging.warning(f"[DITERIMA DARI SERVER] {data}")
-    finally:
-        logging.warning("closing")
-        sock.close()
-    return
+        # Menerima respons
+        data = sock.recv(16)
+        logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
+if __name__ == '__main__':
+    thread_count = 0
+    start_time = time.time()
+    end_time = start_time + 60  # Waktu berjalan selama 1 menit
 
-if __name__=='__main__':
-    for i in range(1,10):
-        kirim_data()
+    while time.time() < end_time:
+        t = threading.Thread(target=send_time_request)
+        t.start()
+        t.join()
+        thread_count += 1
+
+    logging.warning(f"Jumlah thread: {thread_count}")
