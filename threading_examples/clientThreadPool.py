@@ -17,7 +17,7 @@ def send_time_request():
 
 if __name__ == '__main__':
     start_time = time.time()  # Menyimpan waktu awal
-    duration = 60  # Durasi waktu dalam detik
+    duration = 60  # Durasi waktu dalam 60 detik
     count = 0  # Jumlah pesan request
     futures = set()  # Set untuk menyimpan objek future
 
