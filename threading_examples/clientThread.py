@@ -4,7 +4,6 @@ import threading
 import time
 
 def send_time_request():
-    # Membuka socket dan mengirim permintaan waktu
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         server_address = ('localhost', 45000)
         logging.warning(f"Opening socket {server_address}")
@@ -12,7 +11,6 @@ def send_time_request():
         message = 'TIME\r\n'
         logging.warning(f"[CLIENT] Sending {message}")
         sock.sendall(message.encode('utf-8'))
-        # Menerima respons
         data = sock.recv(16)
         logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
