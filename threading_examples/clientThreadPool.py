@@ -1,7 +1,7 @@
 import socket
 import logging
 import concurrent.futures
-import threading
+import time
 
 def send_time_request():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -15,17 +15,12 @@ def send_time_request():
         logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.WARNING)
+    request_count = 0
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-        futures = []
-        i = 0
-        while i < 20:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for _ in range(60):
             future = executor.submit(send_time_request)
-            futures.append(future)
-            i += 1
-        
-        # Tunggu semua task selesai
-        concurrent.futures.wait(futures)
-    thread_count = threading.active_count()
-    logging.warning(f"Jumlah thread: {thread_count}")
+            future.result()
+            request_count += 1
+
+    logging.warning(f"Total pesan request: {request_count}")
