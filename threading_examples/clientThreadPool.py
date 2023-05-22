@@ -16,11 +16,16 @@ def send_time_request():
 
 if __name__ == '__main__':
     request_count = 0
+    futures = []
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for _ in range(60):
             future = executor.submit(send_time_request)
-            future.result()
+            futures.append(future)
             request_count += 1
+
+    # Tunggu semua hasil future sebelum melanjutkan
+    for future in futures:
+        future.result()
 
     logging.warning(f"Total pesan request: {request_count}")
