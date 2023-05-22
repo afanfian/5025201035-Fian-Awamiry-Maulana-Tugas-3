@@ -22,8 +22,7 @@ if __name__ == '__main__':
     with concurrent.futures.ThreadPoolExecutor() as executor:
         start_time = time.time()
         end_time = start_time + 60  # Waktu berjalan selama 1 menit
-
-        while time.time() < end_time:
+        while time.time() - start_time < end_time:  # Menjalankan selama 1 menit
             # Menyerahkan tugas "send_time_request" ke executor untuk dieksekusi oleh thread
             future = executor.submit(send_time_request)
             futures.append(future)
