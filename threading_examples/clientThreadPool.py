@@ -16,20 +16,21 @@ def send_time_request():
         logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
 if __name__ == '__main__':
-    count = 0
     futures = []
 
     # Membuka ThreadPoolExecutor yang akan mengelola thread
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        for _ in range(60):
+        start_time = time.time()
+        end_time = start_time + 60  # Waktu berjalan selama 1 menit
+
+        while time.time() < end_time:
             # Menyerahkan tugas "send_time_request" ke executor untuk dieksekusi oleh thread
             future = executor.submit(send_time_request)
             futures.append(future)
-            count += 1
 
     # Menunggu semua hasil future selesai sebelum melanjutkan eksekusi
     for future in futures:
         future.result()
 
     # Mencetak jumlah total pesan request yang telah dikirim
-    logging.warning(f"Total pesan request: {count}")
+    logging.warning(f"Total pesan request: {len(futures)}")
