@@ -1,31 +1,59 @@
-import sys
 import socket
+import threading
 import logging
-import datetime
+import time
 
-# Create a TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# Bind the socket to the port
-server_address = ('localhost', 10000)
-logging.warning(f"starting up on {server_address}")
-sock.bind(server_address)
-# Listen for incoming connections
-sock.listen(1)
-while True:
-	# Wait for a connection
-	logging.warning("opening connection")
-	connection, client_address = sock.accept()
-	logging.warning(f"connection from {client_address}")
-	# Receive the data in small chunks and retransmit it
-	while True:
-		waktu = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%s")
-		data = connection.recv(32)
-		logging.warning(f"{waktu} received {data}")
-		if data:
-			logging.warning("[SERVER] {waktu} sending data back to the client")
-			connection.sendall(data)
-		else:
-			logging.warning(f"[SERVER] {waktu} no more data from {client_address}")
-			break
-# Clean up the connection
-connection.close()
+class ClientProcessor(threading.Thread):
+    def __init__(self, connection, address):
+        super().__init__()
+        self.connection = connection
+        self.address = address
+
+    def run(self):
+        while True:
+            data = self.connection.recv(32)
+            if not data:
+                break
+            logging.warning(f"[TIME SERVER] received {data} from {self.address}")
+            # Diawali dengan string “TIME dan diakhiri dengan karakter 13 dan karakter 10”
+            if data.startswith(b'TIME') and data.endswith(b'\r\n'):
+                # <jam> berisikan info jam dalam format “hh:mm:ss” dan diakhiri dengan karakter 13 dan karakter 10
+                request_time = time.strftime("%H:%M:%S")
+                # Diawali dengan “JAM<spasi><jam>”
+                response = f"JAM {request_time}\r\n"
+                logging.warning(f"[TIME SERVER] sending {response} to {self.address}")
+                # Dalam bentuk string (UTF-8)
+                self.connection.sendall(response.encode('utf-8'))
+            else:
+                break
+
+        self.connection.close()
+
+class TimeServer(threading.Thread):
+    def __init__(self):
+        super().__init__()
+        self.clients = []
+        self.my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def run(self):
+        self.my_socket.bind(('0.0.0.0', 45000))
+        self.my_socket.listen(1)
+        while True:
+            connection, client_address = self.my_socket.accept()
+            logging.warning(f"connection from {client_address}")
+
+            client_processor = ClientProcessor(connection, client_address)
+            client_processor.start()
+            self.clients.append(client_processor)
+
+    def stop(self):
+        self.my_socket.close()
+
+def main():
+    logging.basicConfig(level=logging.WARNING)
+    server = TimeServer()
+    server.start()
+    server.join()
+
+if __name__ == "__main__":
+    main()
