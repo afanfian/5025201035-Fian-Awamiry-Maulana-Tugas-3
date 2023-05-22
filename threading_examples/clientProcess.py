@@ -15,24 +15,19 @@ def send_time_request():
         logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
 if __name__ == '__main__':
-    # Durasi waktu dalam 60 detik
-    duration = 60
-    def clientProcess():
-        process = multiprocessing.Process(target=send_time_request)
-        process.start()
-        process.join()
-    # Waktu awal sebelum memulai loop
-    start_time = time.time()
-    # Daftar proses yang dibuat
-    processes = []
+    duration = 60  # Durasi waktu dalam 60 detik
+    start_time = time.time() # Waktu awal sebelum memulai loop
+    processes = [] # Daftar proses yang dibuat
+
     while time.time() - start_time < duration:
         # Membuat dan menjalankan proses baru
         process = multiprocessing.Process(target=send_time_request)
-        process.start()
         processes.append(process)
+        process.start()
+
     for process in processes:
         # Menunggu proses selesai
         process.join()
     # Jumlah total proses yang dibuat
-    count = len(processes)
-    logging.warning(f"Total pesan request: {count}")
+    process_count = len(processes)
+    logging.warning(f"Total processes created: {process_count}")
