@@ -16,20 +16,17 @@ def send_time_request():
         logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.WARNING)  # Mengatur level logging
     futures = []
-
     # Membuka ThreadPoolExecutor yang akan mengelola thread
     with concurrent.futures.ThreadPoolExecutor() as executor:
         start_time = time.time()
-        end_time = start_time + 60  # Waktu berjalan selama 1 menit
-        while time.time() - start_time < end_time:  # Menjalankan selama 1 menit
+        while time.time() - start_time < 60:  # Menjalankan selama 1 menit
             # Menyerahkan tugas "send_time_request" ke executor untuk dieksekusi oleh thread
             future = executor.submit(send_time_request)
             futures.append(future)
-
     # Menunggu semua hasil future selesai sebelum melanjutkan eksekusi
     for future in futures:
         future.result()
-
     # Mencetak jumlah total pesan request yang telah dikirim
     logging.warning(f"Total pesan request: {len(futures)}")
