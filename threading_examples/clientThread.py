@@ -15,7 +15,7 @@ def send_time_request():
         logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
 if __name__ == '__main__':
-    thread_count = 0
+    count = 0
     start_time = time.time()
     end_time = start_time + 60  # Waktu berjalan selama 1 menit
 
@@ -23,6 +23,6 @@ if __name__ == '__main__':
         t = threading.Thread(target=send_time_request)
         t.start()
         t.join()
-        thread_count += 1
+        count += 1
 
-    logging.warning(f"Jumlah thread: {thread_count}")
+    logging.warning(f"Total pesan request: {count}")

@@ -16,18 +16,13 @@ def send_time_request():
 
 if __name__ == '__main__':
     duration = 60  # Durasi waktu dalam 60 detik
-    start_time = time.time() # Waktu awal sebelum memulai loop
-    processes = [] # Daftar proses yang dibuat
+    start_time = time.time()  # Waktu awal sebelum memulai loop
+    process_count = 0  # Counter untuk jumlah proses yang dibuat
 
     while time.time() - start_time < duration:
-        # Membuat dan menjalankan proses baru
-        process = multiprocessing.Process(target=send_time_request)
-        processes.append(process)
-        process.start()
+        p = multiprocessing.Process(target=send_time_request)
+        p.start()
+        p.join()
+        process_count += 1
 
-    for process in processes:
-        # Menunggu proses selesai
-        process.join()
-    # Jumlah total proses yang dibuat
-    process_count = len(processes)
-    logging.warning(f"Total processes created: {process_count}")
+    logging.warning(f"Total pesan request: {process_count}")
