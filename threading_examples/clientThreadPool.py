@@ -4,6 +4,7 @@ import concurrent.futures
 import time
 
 def send_time_request():
+    # Membuka socket untuk koneksi ke server dan mengirim permintaan waktu
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         server_address = ('localhost', 45000)
         logging.warning(f"Opening socket {server_address}")
@@ -15,17 +16,20 @@ def send_time_request():
         logging.warning(f"[DITERIMA DARI SERVER] {data}")
 
 if __name__ == '__main__':
-    request_count = 0
+    count = 0
     futures = []
 
+    # Membuka ThreadPoolExecutor yang akan mengelola thread
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        for _ in range(30):
+        for _ in range(60):
+            # Menyerahkan tugas "send_time_request" ke executor untuk dieksekusi oleh thread
             future = executor.submit(send_time_request)
             futures.append(future)
-            request_count += 1
+            count += 1
 
-    # Tunggu semua hasil future sebelum melanjutkan
+    # Menunggu semua hasil future selesai sebelum melanjutkan eksekusi
     for future in futures:
         future.result()
 
-    logging.warning(f"Total pesan request: {request_count}")
+    # Mencetak jumlah total pesan request yang telah dikirim
+    logging.warning(f"Total pesan request: {count}")
